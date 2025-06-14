@@ -19,7 +19,7 @@ contract Issuance{
 
     event CertificateIssued(
         address indexed student, 
-        string certificateId, 
+        uint256 certificateId, 
         string studentName, 
         string course, 
         uint256 issueDate);
@@ -28,24 +28,26 @@ contract Issuance{
         address indexed oldAdmin,
         address indexed newAdmin);
 
-    mapping(address == Certificate) public certificates;
+
+    mapping(address => Certificate) public certificates;
 
     constructor() {
         admin = msg.sender;
     }
 
     modifier onlyAdmin() {
-        if(msg.sender != Admin) {
+        if(msg.sender != admin) {
             revert OnlyAdmin();
         }
         _;
     }
 
     function issueCertificate( //function issues a certificate to a student
-        address student
+        address student,
         string memory certificateId, 
+        string memory studentName,
         string memory course,
-        uint256 issueDate,
+        uint256 /* issueDate */
             ) external onlyAdmin {
             if(student == address(0)) {
                 revert InvalidInput();
@@ -66,9 +68,9 @@ contract Issuance{
                 course: course,
                 issueDate: block.timestamp,
                 exists: true
-            })
+            });
 
-            emit CertificateIssued(student, certificateId, studentName, course, block.timestamp);
+            emit CertificateIssued(student, 0, studentName, course, block.timestamp);
         }
     function verifyCertificate(address student) external view returns(
         bool exists, 
